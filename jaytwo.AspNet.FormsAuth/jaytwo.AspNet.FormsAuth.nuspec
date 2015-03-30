@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>jaytwo.AspNet.FormsAuth</id>
+    <version>$version$</version>
+    <description>Role provider to work with Forms Authentication web projects</description>
+    <authors>Jake Gough</authors>
+    <projectUrl>https://github.com/jakegough/jaytwo.AspNet.FormsAuth/</projectUrl>
+    <licenseUrl>https://raw.githubusercontent.com/jakegough/jaytwo.AspNet.FormsAuth/master/LICENSE</licenseUrl>
+    <tags>jakegough jaytwo AspNet Forms Auth Authentication FormsAuthentication FormsAuth</tags>
+  </metadata>
+  <files>
+    <file src="bin\Net35\$id$.*" target="lib\net35\" />
+    <file src="bin\Net40\$id$.*" target="lib\net40\" exclude="$id$.dll" />
+    <file src="bin\Net45\$id$.*" target="lib\net45\" />
+  </files>
+</package>
