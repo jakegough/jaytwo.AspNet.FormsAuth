@@ -11,7 +11,7 @@ namespace jaytwo.AspNet.FormsAuth
 		{
 			get
 			{
-				return FormsAuthenticationAppHost.GetCurrentUserProfile<SimpleUserProfile>();
+				return FormsAuthenticationAppHost.GetSignedInUserProfileAs<SimpleUserProfile>();
 			}
 		}
 

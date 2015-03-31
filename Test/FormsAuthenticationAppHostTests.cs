@@ -19,14 +19,14 @@ namespace jaytwo.AspNet.FormsAuth.Test
             var roles = new[] { "user", "bro" };
             var profile = new SimpleUserProfile(userName);
             var mockService = MockRepository.GeneratePartialMock<FormsAuthenticationService>();
-            mockService.Stub(x => x.GetCurrentUserProfile()).Return(profile);
-            mockService.Stub(x => x.GetCurrentUserProfile<SimpleUserProfile>()).Return(profile);
-            mockService.Stub(x => x.GetCurrentUserRoles()).Return(roles);
+            mockService.Stub(x => x.GetSignedInUserProfile()).Return(profile);
+            mockService.Stub(x => x.GetSignedInUserProfileAs<SimpleUserProfile>()).Return(profile);
+            mockService.Stub(x => x.GetSignedInUserRoles()).Return(roles);
 
             FormsAuthenticationAppHost.Initialize(mockService);
-            Assert.AreSame(profile, FormsAuthenticationAppHost.GetCurrentUserProfile());
-            Assert.AreSame(profile, FormsAuthenticationAppHost.GetCurrentUserProfile<SimpleUserProfile>());
-            CollectionAssert.AreEquivalent(roles, FormsAuthenticationAppHost.GetCurrentUserRoles());
+            Assert.AreSame(profile, FormsAuthenticationAppHost.SignedInUserProfile);
+            Assert.AreSame(profile, FormsAuthenticationAppHost.GetSignedInUserProfileAs<SimpleUserProfile>());
+            CollectionAssert.AreEquivalent(roles, FormsAuthenticationAppHost.SignedInUserRoles);
         }
 
         [Test]
@@ -51,21 +51,21 @@ namespace jaytwo.AspNet.FormsAuth.Test
                     mockServiceRoles = null;
                 });
 
-            mockService.Stub(x => x.GetCurrentUserProfile())
+            mockService.Stub(x => x.GetSignedInUserProfile())
                 .WhenCalled(x => 
                 { 
                     x.ReturnValue = mockServiceProfile; 
                 })
                 .Return(null); // end with .Return() to make Rhino happy;
 
-            mockService.Stub(x => x.GetCurrentUserProfile<SimpleUserProfile>())
+            mockService.Stub(x => x.GetSignedInUserProfileAs<SimpleUserProfile>())
                 .WhenCalled(x =>
                 {
                     x.ReturnValue = mockServiceProfile;
                 })
                 .Return(null); // end with .Return() to make Rhino happy;
 
-            mockService.Stub(x => x.GetCurrentUserRoles())
+            mockService.Stub(x => x.GetSignedInUserRoles())
                 .WhenCalled(x => 
                 { 
                     x.ReturnValue = mockServiceRoles ?? new string[] { }; 
@@ -98,18 +98,18 @@ namespace jaytwo.AspNet.FormsAuth.Test
 
             try
             {
-                Assert.IsNull(FormsAuthenticationAppHost.GetCurrentUserProfile());
-                CollectionAssert.IsEmpty(FormsAuthenticationAppHost.GetCurrentUserRoles());
+                Assert.IsNull(FormsAuthenticationAppHost.SignedInUserProfile);
+                CollectionAssert.IsEmpty(FormsAuthenticationAppHost.SignedInUserRoles);
 
                 FormsAuthenticationAppHost.SignIn(profile, roles);
                 Assert.AreEqual(profile.UserName, SimpleUserProfile.Current.UserName);
-                Assert.AreEqual(profile.UserName, FormsAuthenticationAppHost.GetCurrentUserProfile().UserName);                
-                CollectionAssert.AreEquivalent(roles, FormsAuthenticationAppHost.GetCurrentUserRoles());
+                Assert.AreEqual(profile.UserName, FormsAuthenticationAppHost.SignedInUserProfile.UserName);                
+                CollectionAssert.AreEquivalent(roles, FormsAuthenticationAppHost.SignedInUserRoles);
                 Assert.IsTrue(onSignedInRaised);
 
                 FormsAuthenticationAppHost.SignOut();
-                Assert.IsNull(FormsAuthenticationAppHost.GetCurrentUserProfile());
-                CollectionAssert.IsEmpty(FormsAuthenticationAppHost.GetCurrentUserRoles());
+                Assert.IsNull(FormsAuthenticationAppHost.SignedInUserProfile);
+                CollectionAssert.IsEmpty(FormsAuthenticationAppHost.SignedInUserRoles);
                 Assert.IsTrue(onSignedOutRaised);
             }
             finally
@@ -132,7 +132,7 @@ namespace jaytwo.AspNet.FormsAuth.Test
                     mockServiceProfile = (IUserProfile)x.Arguments[0];
                 });
 
-            mockService.Stub(x => x.GetCurrentUserProfile())
+            mockService.Stub(x => x.GetSignedInUserProfile())
                 .WhenCalled(x =>
                 {
                     x.ReturnValue = mockServiceProfile;
@@ -141,13 +141,13 @@ namespace jaytwo.AspNet.FormsAuth.Test
 
             FormsAuthenticationAppHost.Initialize(mockService);
 
-            Assert.IsNull(FormsAuthenticationAppHost.GetCurrentUserProfile());
+            Assert.IsNull(FormsAuthenticationAppHost.SignedInUserProfile);
 
             var userName = "Jake";
             var profile = new SimpleUserProfile(userName);
 
             FormsAuthenticationAppHost.SignIn(profile);
-            Assert.AreEqual(profile.UserName, FormsAuthenticationAppHost.GetCurrentUserProfile().UserName);
+            Assert.AreEqual(profile.UserName, FormsAuthenticationAppHost.SignedInUserProfile.UserName);
         }
 
 
@@ -164,7 +164,7 @@ namespace jaytwo.AspNet.FormsAuth.Test
                     mockServiceProfile = (IUserProfile)x.Arguments[0];
                 });
 
-            mockService.Stub(x => x.GetCurrentUserProfile())
+            mockService.Stub(x => x.GetSignedInUserProfile())
                 .WhenCalled(x =>
                 {
                     x.ReturnValue = mockServiceProfile;
@@ -173,12 +173,12 @@ namespace jaytwo.AspNet.FormsAuth.Test
 
             FormsAuthenticationAppHost.Initialize(mockService);
 
-            Assert.IsNull(FormsAuthenticationAppHost.GetCurrentUserProfile());
+            Assert.IsNull(FormsAuthenticationAppHost.SignedInUserProfile);
 
             var userName = "Jake";
 
             FormsAuthenticationAppHost.SignIn(userName);
-            Assert.AreEqual(userName, FormsAuthenticationAppHost.GetCurrentUserProfile().UserName);            
+            Assert.AreEqual(userName, FormsAuthenticationAppHost.SignedInUserProfile.UserName);            
         }
 
         [Test]
@@ -196,14 +196,14 @@ namespace jaytwo.AspNet.FormsAuth.Test
                     mockServiceRoles = (string[])x.Arguments[1];
                 });
 
-            mockService.Stub(x => x.GetCurrentUserProfile())
+            mockService.Stub(x => x.GetSignedInUserProfile())
                 .WhenCalled(x =>
                 {
                     x.ReturnValue = mockServiceProfile;
                 })
                 .Return(null); // end with .Return() to make Rhino happy;
 
-            mockService.Stub(x => x.GetCurrentUserRoles())
+            mockService.Stub(x => x.GetSignedInUserRoles())
                 .WhenCalled(x =>
                 {
                     x.ReturnValue = mockServiceRoles ?? new string[] { };
@@ -212,15 +212,15 @@ namespace jaytwo.AspNet.FormsAuth.Test
 
             FormsAuthenticationAppHost.Initialize(mockService);
 
-            Assert.IsNull(FormsAuthenticationAppHost.GetCurrentUserProfile());
-            CollectionAssert.IsEmpty(FormsAuthenticationAppHost.GetCurrentUserRoles());
+            Assert.IsNull(FormsAuthenticationAppHost.SignedInUserProfile);
+            CollectionAssert.IsEmpty(FormsAuthenticationAppHost.SignedInUserRoles);
 
             var userName = "Jake";
             var roles = new[] { "user", "bro" };
 
             FormsAuthenticationAppHost.SignIn(userName, roles);
-            Assert.AreEqual(userName, FormsAuthenticationAppHost.GetCurrentUserProfile().UserName);
-            CollectionAssert.AreEquivalent(roles, FormsAuthenticationAppHost.GetCurrentUserRoles());
+            Assert.AreEqual(userName, FormsAuthenticationAppHost.SignedInUserProfile.UserName);
+            CollectionAssert.AreEquivalent(roles, FormsAuthenticationAppHost.SignedInUserRoles);
         }
     }
 }

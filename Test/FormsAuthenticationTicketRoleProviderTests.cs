@@ -42,8 +42,8 @@ namespace jaytwo.AspNet.FormsAuth.Test
             var mockService = MockRepository.GeneratePartialMock<FormsAuthenticationService>();
             mockService.Stub(x => x.CurrentHttpContext).Return(mockContext);
 
-            mockService.Stub(x => x.GetCurrentUserProfile()).Return(profile);
-            mockService.Stub(x => x.GetCurrentUserRoles()).Return(roles);
+            mockService.Stub(x => x.GetSignedInUserProfile()).Return(profile);
+            mockService.Stub(x => x.GetSignedInUserRoles()).Return(roles);
 
             FormsAuthenticationAppHost.Initialize(mockService);
             var provider = new FormsAuthenticationTicketRoleProvider();

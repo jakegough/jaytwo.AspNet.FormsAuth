@@ -14,16 +14,6 @@ namespace jaytwo.AspNet.FormsAuth
 {
 	public static class FormsAuthenticationAppHost
 	{
-		public delegate void SignedOutHandler(IUserProfile profile);
-		public static event SignedOutHandler SignedOut;
-		private static void RaiseSignedOut(IUserProfile profile)
-		{
-			if (SignedOut != null)
-			{
-				SignedOut(profile);
-			}
-		}
-
 		public delegate void SignedInHandler(IUserProfile profile, string[] roles);
 		public static event SignedInHandler SignedIn;
 
@@ -32,6 +22,16 @@ namespace jaytwo.AspNet.FormsAuth
 			if (SignedIn != null)
 			{
 				SignedIn(profile, roles);
+			}
+		}
+
+		public delegate void SignedOutHandler(IUserProfile profile);
+		public static event SignedOutHandler SignedOut;
+		private static void RaiseSignedOut(IUserProfile profile)
+		{
+			if (SignedOut != null)
+			{
+				SignedOut(profile);
 			}
 		}
 
@@ -69,9 +69,9 @@ namespace jaytwo.AspNet.FormsAuth
 			SignIn(new SimpleUserProfile(userName), roles);
 		}
 
-		public static void SignIn(IUserProfile userProfile)
+		public static void SignIn(IUserProfile profile)
 		{
-			SignIn(userProfile, null);
+			SignIn(profile, null);
 		}
 
 		public static void SignIn(IUserProfile profile, string[] roles)
@@ -82,7 +82,7 @@ namespace jaytwo.AspNet.FormsAuth
 
 		public static void SignOut()
 		{
-			var profile = GetCurrentUserProfile();
+			var profile = SignedInUserProfile;
 			_FormsAuthentication.SignOut();
 			RaiseSignedOut(profile);
 		}
@@ -103,22 +103,44 @@ namespace jaytwo.AspNet.FormsAuth
                 throw new NotSupportedException("GetRolesForUser only supports the current FormsAuthentication user");
             }
 
-            return GetCurrentUserRoles();
+            return SignedInUserRoles;
         }
 
-		public static string[] GetCurrentUserRoles()
+		public static string[] SignedInUserRoles
 		{
-			return _FormsAuthentication.GetCurrentUserRoles();
+            get
+            {
+                return _FormsAuthentication.GetSignedInUserRoles();
+            }
 		}
 
-		public static IUserProfile GetCurrentUserProfile()
+		public static IUserProfile SignedInUserProfile
 		{
-			return _FormsAuthentication.GetCurrentUserProfile();
+            get
+            {
+                return _FormsAuthentication.GetSignedInUserProfile();
+            }
 		}
 
-		public static T GetCurrentUserProfile<T>() where T : IUserProfile
+		public static T GetSignedInUserProfileAs<T>() where T : IUserProfile
 		{
-			return _FormsAuthentication.GetCurrentUserProfile<T>();
+			return _FormsAuthentication.GetSignedInUserProfileAs<T>();
 		}
+
+        public static string SignedInUserName
+        {
+            get
+            {
+                return _FormsAuthentication.GetSignedInUserName();
+            }            
+        }
+
+        public static DateTime? SignedInTimestampUtc
+        {
+            get
+            {
+                return _FormsAuthentication.GetSignedInTimestampUtc();
+            }
+        }
 	}
 }

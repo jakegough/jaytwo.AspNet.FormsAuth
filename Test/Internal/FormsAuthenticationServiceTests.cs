@@ -157,11 +157,11 @@ namespace jaytwo.AspNet.FormsAuth.Test.Internal
             mockService.Stub(x => x.GetFormsAuthenticationTicket())
                 .Return(ticket);
 
-            var resultProfile = mockService.GetCurrentUserProfile();
+            var resultProfile = mockService.GetSignedInUserProfile();
             Assert.AreEqual(profile.UserName, resultProfile.UserName);
             Assert.AreEqual(profile.GetType(), resultProfile.GetType());
 
-            var resultRoles = mockService.GetCurrentUserRoles();
+            var resultRoles = mockService.GetSignedInUserRoles();
             CollectionAssert.AreEquivalent(roles, resultRoles);
         }
 
@@ -173,7 +173,7 @@ namespace jaytwo.AspNet.FormsAuth.Test.Internal
             mockService.Stub(x => x.GetFormsAuthenticationTicket())
                 .Return(null);
 
-            var userProfile = mockService.GetCurrentUserProfile();
+            var userProfile = mockService.GetSignedInUserProfile();
 
             Assert.That(userProfile, Is.Null);
         }
@@ -186,7 +186,7 @@ namespace jaytwo.AspNet.FormsAuth.Test.Internal
             mockService.Stub(x => x.GetFormsAuthenticationTicket())
                 .Return(null);
 
-            var roles = mockService.GetCurrentUserRoles();
+            var roles = mockService.GetSignedInUserRoles();
 
             Assert.That(roles, Is.EquivalentTo(new string[] { }));
         }
@@ -219,15 +219,15 @@ namespace jaytwo.AspNet.FormsAuth.Test.Internal
             var roles = new[] { "user", "bro" };
             mockService.SignIn(profile, roles);
 
-            var signedInUser = mockService.GetCurrentUserProfile();
+            var signedInUser = mockService.GetSignedInUserProfile();
             Assert.AreEqual(userName, signedInUser.UserName);
 
-            var signedInUserRoles = mockService.GetCurrentUserRoles();
+            var signedInUserRoles = mockService.GetSignedInUserRoles();
             CollectionAssert.AreEquivalent(roles, signedInUserRoles);
 
             mockService.SignOut();
-            Assert.That(mockService.GetCurrentUserProfile(), Is.Null);
-            Assert.That(mockService.GetCurrentUserRoles(), Is.EquivalentTo(new string[] { }));
+            Assert.That(mockService.GetSignedInUserProfile(), Is.Null);
+            Assert.That(mockService.GetSignedInUserRoles(), Is.EquivalentTo(new string[] { }));
 
         }
 
@@ -262,15 +262,15 @@ namespace jaytwo.AspNet.FormsAuth.Test.Internal
             var profile = new SimpleUserProfile(userName);
             mockService.SignIn(profile, null);
 
-            var signedInUser = mockService.GetCurrentUserProfile();
+            var signedInUser = mockService.GetSignedInUserProfile();
             Assert.AreEqual(userName, signedInUser.UserName);
 
-            var signedInUserRoles = mockService.GetCurrentUserRoles();
-            Assert.That(mockService.GetCurrentUserRoles(), Is.EquivalentTo(new string[] { }));
+            var signedInUserRoles = mockService.GetSignedInUserRoles();
+            Assert.That(mockService.GetSignedInUserRoles(), Is.EquivalentTo(new string[] { }));
 
             mockService.SignOut();
-            Assert.That(mockService.GetCurrentUserProfile(), Is.Null);
-            Assert.That(mockService.GetCurrentUserRoles(), Is.EquivalentTo(new string[] { }));
+            Assert.That(mockService.GetSignedInUserProfile(), Is.Null);
+            Assert.That(mockService.GetSignedInUserRoles(), Is.EquivalentTo(new string[] { }));
         }
 	}
 }

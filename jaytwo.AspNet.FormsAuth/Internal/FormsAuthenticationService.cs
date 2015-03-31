@@ -35,12 +35,12 @@ namespace jaytwo.AspNet.FormsAuth.Internal
 			}
 		}
 
-		public virtual IUserProfile GetCurrentUserProfile()
+		public virtual IUserProfile GetSignedInUserProfile()
 		{
-			return GetCurrentUserProfile<IUserProfile>();
+			return GetSignedInUserProfileAs<IUserProfile>();
 		}
 
-		public virtual T GetCurrentUserProfile<T>() where T : IUserProfile
+		public virtual T GetSignedInUserProfileAs<T>() where T : IUserProfile
 		{
             var ticket = TryGetFormsAuthenticationTicket();
 
@@ -54,7 +54,7 @@ namespace jaytwo.AspNet.FormsAuth.Internal
 			}
 		}
 
-		public virtual string[] GetCurrentUserRoles()
+		public virtual string[] GetSignedInUserRoles()
 		{
             string[] result = null;
 
@@ -71,8 +71,35 @@ namespace jaytwo.AspNet.FormsAuth.Internal
             }
 
             return result;
-			
 		}
+
+        public virtual string GetSignedInUserName()
+        {
+            string result = null;
+
+            var ticket = TryGetFormsAuthenticationTicket();
+
+            if (ticket != null)
+            {
+                result = ticket.Name;
+            }
+
+            return result;
+        }
+
+        public virtual DateTime? GetSignedInTimestampUtc()
+        {
+            DateTime? result = null;
+
+            var ticket = TryGetFormsAuthenticationTicket();
+
+            if (ticket != null)
+            {
+                result = ticket.IssueDate.ToUniversalTime();
+            }
+
+            return result;
+        }
 
 		public virtual void SignIn(IUserProfile profile, string[] roles)
 		{
@@ -158,6 +185,5 @@ namespace jaytwo.AspNet.FormsAuth.Internal
 
 			CurrentHttpContext.Response.Cookies.Add(new HttpCookie(CookieName, encryptedTicket));
 		}
-
 	}
 }
